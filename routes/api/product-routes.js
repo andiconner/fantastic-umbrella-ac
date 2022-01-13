@@ -144,7 +144,7 @@ router.get('/', (req, res) => {
         id: req.params.id
       }
     })
-    .then(productData => {
+      .then(productData => {
       if (!productData) {
           res.status(404).json({ message: 'No product found with this id' });
           return;

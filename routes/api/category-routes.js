@@ -1,26 +1,27 @@
 const router = require('express').Router();
-const { Category, Product } = require('../../models');
+const { Category, Product, Tag } = require('../../models');
 
 // The `/api/categories` endpoint
-
+//get all categories
 router.get('/', (req, res) => {
   // find all categories
   Category.findAll({
     include: [
       {
         model: Product,
-        attributes: ['product_name, category_id']
+        attributes: ['product_name']
       },
     ]
+  })
     .then(categoryData => res.json(categoryData))
     .catch(err => {
     console.log(err);
     res.status(500).json(err);
-    })
+    });
 
-  })
-  // be sure to include its associated Products
 });
+  // be sure to include its associated Products
+
 
 router.get('/:id', (req, res) => {
   // find one category by its `id` value
@@ -31,9 +32,10 @@ router.get('/:id', (req, res) => {
       include: [
         {
           model: Product,
-          attributes: ['product_name, category_id']
+          attributes: ['product_name']
         },
       ]
+  })
       .then(categoryData => {
         if (!categoryData) {
             res.status(404).json({ message: 'No category found with this id' });
@@ -45,7 +47,7 @@ router.get('/:id', (req, res) => {
         console.log(err);
         res.status(500).json(err);
     })
-  })
+  
   // be sure to include its associated Products
 });
 
@@ -64,16 +66,11 @@ router.post('/', (req, res) => {
 
 router.put('/:id', (req, res) => {
   // update a category by its `id` value
-  Category.update(
-    {
-        category_name: req.body.category_name
+  Category.update(req.body, {
+    where: {
+      id: req.params.id
     },
-    {
-        where: {
-            id: req.params.id
-        }
-    }
-)
+  })
     .then(categoryData => {
         if (!categoryData) {
             res.status(404).json({ message: 'No category found with this id' });
@@ -94,9 +91,9 @@ router.delete('/:id', (req, res) => {
     where: {
         id: req.params.id
     }
-})
+  })
     .then(categoryData => {
-        if (!dbPostData) {
+        if (!categoryData) {
             res.status(404).json({ message: 'No category found with this id' });
             return;
         }
